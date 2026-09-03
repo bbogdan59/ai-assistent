@@ -1,0 +1,29 @@
+{
+  "name": "whatsapp-calendar-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WhatsApp group bot: answers calendar questions, adds events, and posts a monthly recap of open action items.",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "auth:google": "tsx scripts/get-google-token.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "googleapis": "^144.0.0",
+    "node-cron": "^3.0.3",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.6",
+    "@types/node-cron": "^3.0.11",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
