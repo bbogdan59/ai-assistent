@@ -1,5 +1,6 @@
-node_modules/
-dist/
+__pycache__/
+*.pyc
+.venv/
+venv/
 .env
 *.log
-google-token-output.txt
