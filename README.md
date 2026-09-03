@@ -7,7 +7,7 @@ A WhatsApp group bot that:
 - Logs everything said in the group and, once a month (or on request), posts a
   recap of decisions, action items, and open questions from the last 30 days.
 
-It's a small always-on Node.js/Express service (WhatsApp webhook receiver),
+It's a small always-on Python/Flask service (WhatsApp webhook receiver),
 backed by Postgres (message history), the WhatsApp Cloud API, Google
 Calendar, and Claude (Anthropic API) for understanding requests and writing
 the recap.
@@ -29,7 +29,7 @@ Practically, this means:
   you'd add a friend.
 - You should request/confirm Groups API access for your WhatsApp Business
   Account in Meta's developer console before relying on this.
-- The webhook parser in `src/whatsapp.ts` (`parseIncomingMessages`) is
+- The webhook parser in `app/whatsapp.py` (`parse_incoming_messages`) is
   written defensively and checks the most likely field names for a group
   identifier, but you should set `DEBUG_LOG_RAW_WEBHOOKS=true` and look at
   a real incoming group message payload once you have access, to confirm
@@ -86,8 +86,9 @@ Practically, this means:
 5. Copy `.env.example` to `.env`, fill in `GOOGLE_CLIENT_ID` /
    `GOOGLE_CLIENT_SECRET`, then run:
    ```
-   npm install
-   npm run auth:google
+   python -m venv .venv && source .venv/bin/activate
+   pip install -r requirements.txt
+   python scripts/get_google_token.py
    ```
    Open the printed URL, approve access, and copy the `GOOGLE_REFRESH_TOKEN`
    it prints into your `.env` (and later into Railway's env vars).
@@ -118,13 +119,21 @@ and set `ANTHROPIC_API_KEY`.
 ### 5. Local development
 
 ```
-npm install
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 cp .env.example .env   # fill in real values
-npm run dev             # runs against the DATABASE_URL in .env (e.g. a local/Railway Postgres)
+python -m app.server    # runs against the DATABASE_URL in .env (e.g. a local/Railway Postgres)
 ```
 
 Use a tool like `ngrok` to expose your local port for Meta's webhook while
 testing.
+
+Note: the app uses APScheduler to run the monthly recap job in-process, and
+the Dockerfile runs gunicorn with a single worker (`--workers 1`) for
+exactly that reason - running more than one worker/process would schedule
+and fire the recap job multiple times. If you ever need to scale this
+service up, move the recap job to a separate scheduled process instead of
+increasing worker count.
 
 ## Configuration reference
 
